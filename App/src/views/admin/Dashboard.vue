@@ -150,7 +150,7 @@ export default {
           }
         }
       }
-      const newDate = new Date(minDate * 1000);
+      const newDate = new Date(minDate);
       return `${newDate
         .toDateString()
         .substr(4)} | ${newDate.toTimeString().substr(0, 8)}`;
@@ -169,7 +169,7 @@ export default {
         arr2.push(0);
         for (const key of this.$store.state.visitors.data) {
         for (const visit of key.visits) {
-          if (this.sameDay(new Date(visit.seconds * 1000),out)) {
+          if (this.sameDay(new Date(visit.seconds),out)) {
             const newVal = 1+arr2.pop();
             arr2.push(newVal);
             if(newVal>maxVal){
