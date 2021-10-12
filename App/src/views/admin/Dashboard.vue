@@ -4,7 +4,7 @@
       <div cols="3">
         <v-col>
           <DashBoardCard
-            :title="'Total Visits This Month (' + getCurrentMonth() + ')'"
+            :title="'Total Visits This Month (' + this.$store.state.selectedDate + ')'"
             color="primary"
             :data="String(totalVisits)"
             :icon="'mdi-cursor-default-click'"
@@ -42,7 +42,7 @@
           single-line
           hide-details
         ></v-text-field>
-        <v-btn @click="getCurrentMonthData()">
+        <v-btn @click="refreshData()">
           <v-icon>mdi-refresh-circle</v-icon>
         </v-btn>
       </v-card-title>
@@ -61,9 +61,21 @@
             <td><v-icon
         small
         class="mr-2"
-        @click="this.alert('hello')"
+        @click="deleteUser(item.id)"
       >
-        mdi-pencil
+        mdi-delete
+      </v-icon><v-icon
+        small
+        class="mr-2"
+        @click="blacklistUser(item.id)"
+      >
+        mdi-account-cancel
+      </v-icon><v-icon
+        small
+        class="mr-2"
+        @click="whitelistUser(item.id)"
+      >
+        mdi-account-check
       </v-icon></td>
           </tr>
         </template>
@@ -74,7 +86,8 @@
 
 <script>
 import DashBoardCard from "../../components/DashBoardCard";
-import { getAllVisitorData } from "../../firebase_config.js";
+import { getAllVisitorData,deleteVisitor, blacklist, whitelist } from "../../firebase_config";
+import {getCurrentMonth, sameDay} from "../../utilities";
 export default {
   data() {
     return {
@@ -85,47 +98,21 @@ export default {
     DashBoardCard,
   },
   created() {
-    this.getCurrentMonthData();
+    getAllVisitorData(getCurrentMonth());
   },
   methods: {
-    getCurrentMonth() {
-      var date = new Date();
-      var dateString = `${this.getMonthName(
-        date.getMonth()
-      )} ${date.getFullYear()}`;
-      return dateString;
+    deleteUser(id) {
+      deleteVisitor(id);
     },
-    getCurrentMonthData() {
-      getAllVisitorData(this.getCurrentMonth());
-      return;
+    blacklistUser(id) {
+      blacklist(id);
     },
-    getMonthName(id) {
-      const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-      return monthNames[id];
+    refreshData(){
+      getAllVisitorData(this.$store.state.selectedDate);
     },
-    newVal(id) {
-      return id * 2;
-    },
-    sameDay(d1, d2) {
-      return (
-        d1.getFullYear() === d2.getFullYear() &&
-        d1.getMonth() === d2.getMonth() &&
-        d1.getDate() === d2.getDate()
-      );
-    },
+    whitelistUser(id){
+      whitelist(id);
+    }
   },
   computed: {
     headers() {
@@ -218,7 +205,7 @@ export default {
         arr2.push(0);
         for (const key of this.$store.state.visitors.data) {
           for (const visit of key.visits) {
-            if (this.sameDay(new Date(visit), out)) {
+            if (sameDay(new Date(visit), out)) {
               const newVal = 1 + arr2.pop();
               arr2.push(newVal);
             }
