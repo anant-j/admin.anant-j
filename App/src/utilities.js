@@ -6,6 +6,15 @@ export function getCurrentMonth() {
     return dateString;
   }
 
+export function getAllMonths(){
+    var year = new Date().getFullYear();
+    var final = [];
+    for (let index = 1; index <= 12; index++) {
+        final.push(`${getMonthName(index)} ${year}`);
+    }
+    return final;
+}
+
   
 export function sameDay(d1, d2) {
     return (

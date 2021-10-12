@@ -34,7 +34,7 @@
     <v-card>
       <v-card-title>
         Visitors
-        <v-spacer></v-spacer>
+        <v-spacer></v-spacer> 
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -42,6 +42,12 @@
           single-line
           hide-details
         ></v-text-field>
+        <v-spacer></v-spacer> 
+        <v-select
+          :items="availableDates"
+          label="Month Selection"
+          v-model="currentDate"
+        ></v-select>
         <v-btn @click="refreshData()">
           <v-icon>mdi-refresh-circle</v-icon>
         </v-btn>
@@ -87,11 +93,12 @@
 <script>
 import DashBoardCard from "../../components/DashBoardCard";
 import { getAllVisitorData,deleteVisitor, blacklist, whitelist } from "../../firebase_config";
-import {getCurrentMonth, sameDay} from "../../utilities";
+import {getAllMonths, getCurrentMonth, sameDay} from "../../utilities";
 export default {
   data() {
     return {
       search: "",
+      currentDate: this.$store.state.selectedDate,
     };
   },
   components: {
@@ -217,6 +224,15 @@ export default {
       final["series"] = [{ name: "Visits", data: arr2 }];
       // final["series"] =arr2;
       return final;
+    },
+    availableDates(){
+      return getAllMonths();
+    }
+  },
+  watch: {
+    currentDate(newVal) {
+      this.$store.state.selectedDate = newVal;
+      getAllVisitorData(newVal);
     },
   },
 };
