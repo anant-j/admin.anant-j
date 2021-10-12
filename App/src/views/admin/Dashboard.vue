@@ -145,12 +145,12 @@ export default {
       let minDate = 0;
       for (const key of this.$store.state.visitors.data) {
         for (const visit of key.visits) {
-          if (visit.seconds > minDate) {
-            minDate = visit.seconds;
+          if (visit > minDate) {
+            minDate = visit;
           }
         }
       }
-      const newDate = new Date(minDate);
+      const newDate =new Date(minDate);
       return `${newDate
         .toDateString()
         .substr(4)} | ${newDate.toTimeString().substr(0, 8)}`;
@@ -169,7 +169,7 @@ export default {
         arr2.push(0);
         for (const key of this.$store.state.visitors.data) {
         for (const visit of key.visits) {
-          if (this.sameDay(new Date(visit.seconds),out)) {
+          if (this.sameDay(new Date(visit),out)) {
             const newVal = 1+arr2.pop();
             arr2.push(newVal);
             if(newVal>maxVal){
