@@ -2,7 +2,7 @@
   <div>
     <v-card>
       <v-card-title>
-        Blacklist
+        Whitelist
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -11,29 +11,28 @@
           single-line
           hide-details
         ></v-text-field>
-        <v-btn @click="updateBlackList()">
+        <v-btn @click="updateWhiteList()">
           <v-icon>mdi-refresh-circle</v-icon>
         </v-btn>
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="blacklist"
+        :items="whitelist"
         class="elevation-1"
         :search="search"
       >
         <template v-slot:item="{ item }">
           <tr>
             <td>{{ item.id }}</td>
-            <td>{{ item.blackListedBy }}</td>
-            <td>{{ item.blackListedFor }}</td>
-            <td>{{ new Date(item.blackListedOn.seconds*1000).toLocaleString() }}</td>
-            <td><v-icon
-        small
-        class="mr-2"
-        @click="remove(item.id)"
-      >
-        mdi-delete
-      </v-icon></td>
+            <td>{{ item.whitelistedBy }}</td>
+            <td>
+              {{ new Date(item.whitelistedOn.seconds * 1000).toLocaleString() }}
+            </td>
+            <td>
+              <v-icon small class="mr-2" @click="remove(item.id)">
+                mdi-delete
+              </v-icon>
+            </td>
           </tr>
         </template>
       </v-data-table>
@@ -42,48 +41,43 @@
 </template>
 
 <script>
-import { getBlacklist, removeFromBlacklist } from "../../firebase_config";
+import { getWhitelist, removeFromWhitelist } from "../../firebase_config";
 export default {
   data() {
     return {
-        blacklist:[]
+      whitelist: [],
     };
   },
-  components: {
-  },
+  components: {},
   created() {
-    this.updateBlackList();
+    this.updateWhiteList();
   },
   methods: {
-      remove(id){
-        removeFromBlacklist(id);
-        this.updateBlackList();
-      },
-      updateBlackList(){
-        this.blacklist=getBlacklist();
-      }
+    remove(id) {
+      removeFromWhitelist(id);
+      this.updateWhiteList();
+    },
+    updateWhiteList() {
+      this.whitelist = getWhitelist();
+    },
   },
   computed: {
-        headers() {
+    headers() {
       return [
         {
           text: "Id",
           value: "id",
         },
         {
-          text: "Blacklisted By",
+          text: "Whitelisted By",
           value: "",
           filterable: false,
         },
         {
-          text: "Blacklisted For",
-          value: "",
-        },
-        {
-          text: "Blacklisted on",
+          text: "Whitelisted on",
           value: ``,
         },
-         {
+        {
           text: "Actions",
         },
       ];

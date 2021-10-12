@@ -29,6 +29,34 @@ export function getAllVisitorData(dateString) {
   store.state.visitors["data"] = final;
 }
 
+export function getBlacklist(){
+    const final = [];
+  db.collection("Blacklist")
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = JSON.parse(JSON.stringify(doc.data()));
+        data["id"] = doc.id;
+        final.push(data);
+      });
+    });
+    return final;
+}
+
+export function getWhitelist(){
+    const final = [];
+  db.collection("Whitelist")
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = JSON.parse(JSON.stringify(doc.data()));
+        data["id"] = doc.id;
+        final.push(data);
+      });
+    });
+    return final;
+}
+
 export function deleteVisitor(visitorId) {
   db.collection(store.state.selectedDate)
     .doc(visitorId)
@@ -37,7 +65,7 @@ export function deleteVisitor(visitorId) {
 }
 
 export function blacklist(visitorId) {
-  var confirmation = confirm(`Blacklist ${visitorId}?`);
+  var confirmation = confirm(`Blacklist: ${visitorId}?`);
   if (!confirmation) return;
   db.collection("Whitelist")
   .doc(visitorId)
@@ -51,8 +79,16 @@ export function blacklist(visitorId) {
     });
 }
 
+export function removeFromBlacklist(visitorId) {
+    var confirmation = confirm(`Remove from Blacklist: ${visitorId}?`);
+    if (!confirmation) return;
+    db.collection("Blacklist")
+    .doc(visitorId)
+    .delete();
+}
+
 export function whitelist(visitorId) {
-  var confirmation = confirm(`Whitelist ${visitorId}?`);
+  var confirmation = confirm(`Whitelist: ${visitorId}?`);
   if (!confirmation) return;
   db.collection("Blacklist")
   .doc(visitorId)
@@ -63,4 +99,12 @@ export function whitelist(visitorId) {
       whitelistedOn: new Date(),
       whitelistedBy: store.state.auth.user.data.email,
     });
+}
+
+export function removeFromWhitelist(visitorId) {
+    var confirmation = confirm(`Remove from Whitelist: ${visitorId}?`);
+    if (!confirmation) return;
+    db.collection("Whitelist")
+    .doc(visitorId)
+    .delete();
 }

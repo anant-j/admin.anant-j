@@ -48,7 +48,8 @@ export default {
     drawer: false,
     menus: [
       { path: '', title: 'Dashboard', icon: 'mdi-view-dashboard' },
-      { path: 'blacklist', title: 'Blacklist', icon: 'mdi-view-dashboard' },
+      { path: 'blacklist', title: 'Blacklist', icon: 'mdi-account-cancel' },
+      { path: 'whitelist', title: 'Whitelist', icon: 'mdi-account-check' },
     ]
   }),
   created(){

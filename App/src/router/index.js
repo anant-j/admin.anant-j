@@ -5,6 +5,7 @@ import Login from '../views/Login';
 
 import Dashboard from '../views/admin/Dashboard';
 import Blacklist from '../views/admin/Blacklist';
+import Whitelist from '../views/admin/Whitelist';
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,7 @@ const routes = [
     children: [
       { path: '', component: Dashboard },
       { path: 'blacklist', component: Blacklist },
+      { path: 'whitelist', component: Whitelist },
     ],
     meta: {
       requiresAuth: true
