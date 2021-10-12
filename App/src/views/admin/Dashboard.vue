@@ -52,11 +52,22 @@
           <v-icon>mdi-refresh-circle</v-icon>
         </v-btn>
       </v-card-title>
-      <v-data-table
-        :headers="headers"
-        :items="this.$store.state.visitors.data"
-        :search="search"
-      ></v-data-table>
+        <v-data-table
+    :headers="headers"
+    :items="this.$store.state.visitors.data"
+    class="elevation-1"
+    :search="search"
+  >
+     <template
+    v-slot:item="{ item }">
+    <tr>
+      <td>{{ item.id }}</td>
+      <td>{{ item.visits.length }}</td>
+      <td>{{ item.location.place}}</td>
+      <td>{{new Date(Math.max( ...item.visits))}}</td>
+    </tr>
+     </template>
+  </v-data-table>
     </v-card>
   </div>
 </template>
@@ -129,8 +140,12 @@ export default {
           filterable: false,
         },
         {
-          text: "Visits this month",
+          text: "Location",
           value: "location.place",
+        },
+                {
+          text: "LastVisit",
+          value: `visits`,
         },
       ];
     },
