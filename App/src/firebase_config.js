@@ -16,6 +16,7 @@ export default firebase;
 var db = firebase.firestore();
 export async function getAllVisitorData(dateString) {
   const final = [];
+  store.state.visitors=[];
   await db.collection(dateString)
     .get()
     .then((querySnapshot) => {
@@ -25,8 +26,7 @@ export async function getAllVisitorData(dateString) {
         final.push(data);
       });
     });
-  store.state.visitors["dated"] = dateString;
-  store.state.visitors["data"] = final;
+  store.state.visitors = final;
 }
 
 export async function getBlacklist() {

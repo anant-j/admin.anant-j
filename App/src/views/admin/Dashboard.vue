@@ -73,7 +73,7 @@
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="this.$store.state.visitors.data"
+        :items="this.$store.state.visitors"
         class="elevation-1"
         :search="search"
       >
@@ -166,14 +166,14 @@ export default {
     },
     totalVisits() {
       let totalCount = 0;
-      for (const key of this.$store.state.visitors.data) {
+      for (const key of this.$store.state.visitors) {
         totalCount += key.visits.length;
       }
       return totalCount;
     },
     latestVisit() {
       let minDate = 0;
-      for (const key of this.$store.state.visitors.data) {
+      for (const key of this.$store.state.visitors) {
         for (const visit of key.visits) {
           if (visit > minDate) {
             minDate = visit;
@@ -229,7 +229,7 @@ export default {
       while (out <= today) {
         arr1.push(out.getTime());
         arr2.push(0);
-        for (const key of this.$store.state.visitors.data) {
+        for (const key of this.$store.state.visitors) {
           for (const visit of key.visits) {
             if (sameDay(new Date(visit), out)) {
               const newVal = 1 + arr2.pop();
@@ -246,7 +246,7 @@ export default {
     },
     getLocations() {
       const arr = [];
-      for (const key of this.$store.state.visitors.data) {
+      for (const key of this.$store.state.visitors) {
         arr.push({
           position: {
             lat: key.location.coordinates.latitude,
@@ -255,7 +255,6 @@ export default {
           title: key.id,
         });
       }
-      console.log(arr);
       return arr;
     },
     availableDates() {
