@@ -42,7 +42,7 @@
                 class="ma-2"
                 color="green"
                 text-color="white"
-                @click="open(item.id)"
+                @click="openPage(item.id)"
               >
                 Open
               </v-chip>
@@ -74,9 +74,9 @@ export default {
     async updateWhiteList() {
       await getWhitelist();
     },
-    // open(id) {
-
-    // },
+    openPage(id){
+              this.$router.push(`/visit?id=${id}`);
+    }
   },
   computed: {
     headers() {

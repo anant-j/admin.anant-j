@@ -4,7 +4,7 @@
       <div>
         <v-col>
           <DashBoardCard
-            :title="'Total Visits This Month'"
+            :title="'Total Visits'"
             color="primary"
             :data="String(totalVisits)"
             :icon="'mdi-cursor-default-click'"
@@ -12,7 +12,7 @@
         </v-col>
         <v-col>
           <DashBoardCard
-            :title="'Last visit on'"
+            :title="'Last visit'"
             color="warning"
             :data="latestVisit"
             :icon="'mdi-clock'"
@@ -221,7 +221,7 @@ export default {
       getWhitelist();
     },
     openPage(id) {
-      alert(id);
+      this.$router.push(`/visit?id=${id}`);
     },
   },
   computed: {
