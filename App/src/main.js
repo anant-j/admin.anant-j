@@ -6,13 +6,20 @@ import firebase from './firebase_config.js';
 import vuetify from './plugins/vuetify';
 import VueApexCharts from 'vue-apexcharts'
 import { firestorePlugin } from 'vuefire'
-
+import * as VueGoogleMaps from 'gmap-vue'
 
 Vue.config.productionTip = false;
 
 Vue.use(firestorePlugin);
 Vue.use(VueApexCharts);
 Vue.component('apexchart', VueApexCharts);
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: process.env.VUE_APP_GOOGLE_MAPS_API_KEY,
+    libraries: 'places',
+  },
+  installComponents: true
+})
 let app;
 
 firebase.auth().onAuthStateChanged(user => {

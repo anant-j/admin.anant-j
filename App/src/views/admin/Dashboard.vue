@@ -1,10 +1,12 @@
 <template>
   <div>
     <v-row>
-      <div cols="3">
+      <div>
         <v-col>
           <DashBoardCard
-            :title="'Total Visits This Month (' + this.$store.state.selectedDate + ')'"
+            :title="
+              'Total Visits This Month (' + this.$store.state.selectedDate + ')'
+            "
             color="primary"
             :data="String(totalVisits)"
             :icon="'mdi-cursor-default-click'"
@@ -20,8 +22,8 @@
         </v-col>
       </div>
       <v-col cols="3">
-        <v-card elevation="15" outlined>
-          <v-sheet class="v-sheet--offset" color="dark" elevation="15">
+        <v-card>
+          <v-sheet class="v-sheet--offset" style="height:300px" color="dark">
             <apexchart
               type="line"
               :options="getBarValues.options"
@@ -30,11 +32,28 @@
           </v-sheet>
         </v-card>
       </v-col>
+      <v-col cols="3">
+        <GmapMap
+          :center="center"
+          :zoom="10"
+          map-type-id="terrain"
+          style="height: 300px"
+        >
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in getLocations"
+            :position="m.position"
+            :clickable="true"
+            :title="m.title"
+            @click="center = m.position"
+          />
+        </GmapMap>
+      </v-col>
     </v-row>
     <v-card>
       <v-card-title>
         Visitors
-        <v-spacer></v-spacer> 
+        <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -42,7 +61,7 @@
           single-line
           hide-details
         ></v-text-field>
-        <v-spacer></v-spacer> 
+        <v-spacer></v-spacer>
         <v-select
           :items="availableDates"
           label="Month Selection"
@@ -64,25 +83,15 @@
             <td>{{ item.visits.length }}</td>
             <td>{{ item.location.place }}</td>
             <td>{{ new Date(Math.max(...item.visits)).toLocaleString() }}</td>
-            <td><v-icon
-        small
-        class="mr-2"
-        @click="deleteUser(item.id)"
-      >
-        mdi-delete
-      </v-icon><v-icon
-        small
-        class="mr-2"
-        @click="blacklistUser(item.id)"
-      >
-        mdi-account-cancel
-      </v-icon><v-icon
-        small
-        class="mr-2"
-        @click="whitelistUser(item.id)"
-      >
-        mdi-account-check
-      </v-icon></td>
+            <td>
+              <v-icon small class="mr-2" @click="deleteUser(item.id)">
+                mdi-delete </v-icon
+              ><v-icon small class="mr-2" @click="blacklistUser(item.id)">
+                mdi-account-cancel </v-icon
+              ><v-icon small class="mr-2" @click="whitelistUser(item.id)">
+                mdi-account-check
+              </v-icon>
+            </td>
           </tr>
         </template>
       </v-data-table>
@@ -92,13 +101,22 @@
 
 <script>
 import DashBoardCard from "../../components/DashBoardCard";
-import { getAllVisitorData,deleteVisitor, blacklist, whitelist } from "../../firebase_config";
-import {getAllMonths, getCurrentMonth, sameDay} from "../../utilities";
+import {
+  getAllVisitorData,
+  deleteVisitor,
+  blacklist,
+  whitelist,
+} from "../../firebase_config";
+import { getAllMonths, getCurrentMonth, sameDay } from "../../utilities";
 export default {
   data() {
     return {
       search: "",
       currentDate: this.$store.state.selectedDate,
+      center: {
+        lat: 43.263911,
+        lng: -79.950365,
+      },
     };
   },
   components: {
@@ -114,12 +132,12 @@ export default {
     blacklistUser(id) {
       blacklist(id);
     },
-    refreshData(){
+    refreshData() {
       getAllVisitorData(this.$store.state.selectedDate);
     },
-    whitelistUser(id){
+    whitelistUser(id) {
       whitelist(id);
-    }
+    },
   },
   computed: {
     headers() {
@@ -141,7 +159,7 @@ export default {
           text: "Last Visit",
           value: `visits`,
         },
-         {
+        {
           text: "Actions",
         },
       ];
@@ -192,6 +210,7 @@ export default {
                 reset: true,
               },
             },
+            height: "300px",
           },
           tooltip: {
             enabled: true,
@@ -225,9 +244,23 @@ export default {
       // final["series"] =arr2;
       return final;
     },
-    availableDates(){
+    getLocations() {
+      const arr = [];
+      for (const key of this.$store.state.visitors.data) {
+        arr.push({
+          position: {
+            lat: key.location.coordinates.latitude,
+            lng: key.location.coordinates.longitude,
+          },
+          title: key.id,
+        });
+      }
+      console.log(arr);
+      return arr;
+    },
+    availableDates() {
       return getAllMonths();
-    }
+    },
   },
   watch: {
     currentDate(newVal) {
