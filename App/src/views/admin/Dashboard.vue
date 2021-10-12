@@ -189,6 +189,13 @@ export default {
               },
             },
           },
+          tooltip: {
+            enabled: true,
+            shared: true,
+            followCursor: true,
+            intersect: false,
+            theme: false,
+          },
         },
         series: [],
       };

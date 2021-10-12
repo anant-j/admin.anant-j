@@ -73,7 +73,7 @@ export default {
             .signInWithEmailAndPassword(this.email, this.password)
             .then(() => {
               this.disabled = false;
-              this.$router.replace({ path: "/admin" });
+              this.$router.replace({ path: "/" });
             })
             .catch(err => {
               this.disabled = false;
@@ -90,7 +90,7 @@ export default {
             .createUserWithEmailAndPassword(this.email, this.password)
             .then(() => {
               this.disabled = false;
-              this.$router.replace({ path: "/admin" });
+              this.$router.replace({ path: "/" });
             })
             .catch(err => {
               this.disabled = false;

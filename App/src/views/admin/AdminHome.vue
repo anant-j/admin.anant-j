@@ -59,7 +59,7 @@ export default {
         .auth()
         .signOut()
         .then(() => {
-          this.$router.replace({path: '/'});
+          this.$router.replace({path: '/login'});
         });
     },
     goto(newPath) {

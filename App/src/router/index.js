@@ -10,11 +10,12 @@ Vue.use(VueRouter)
 const routes = [
   {
     // Login Page
-    path: '/',
+    path: '/login',
+    name: 'Login',
     component: Login
   },
   {
-    path: '/admin',
+    path: '/',
     component: () => import('../views/admin/AdminHome.vue'),
     children: [
       { path: '', component: Dashboard },
@@ -33,7 +34,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!(firebase.auth().currentUser)) {
-      next({name: '/'});
+      next({name: 'Login'});
     } 
     else {
       next();
@@ -41,7 +42,7 @@ router.beforeEach((to, from, next) => {
   }
   else if(to.path == '/') {
     if(firebase.auth().currentUser) {
-      next({path: '/admin'});
+      next({path: '/'});
     }
     else {
       next();
