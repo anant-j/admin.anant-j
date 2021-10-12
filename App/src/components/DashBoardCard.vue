@@ -1,7 +1,7 @@
 <template>
     <v-card :color="color" elevation="15" outlined>
         <v-card-subtitle class="white--text">
-            {{ title }}
+            <h2>{{ title }}</h2>
         </v-card-subtitle>
         <v-card-title>
             <v-icon color="white" large left>{{ icon }}</v-icon>

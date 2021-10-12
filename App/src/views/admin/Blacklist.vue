@@ -17,7 +17,7 @@
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="blacklist"
+        :items="Object.values(this.$store.state.blacklist)"
         class="elevation-1"
         :search="search"
       >
@@ -46,7 +46,7 @@ import { getBlacklist, removeFromBlacklist } from "../../firebase_config";
 export default {
   data() {
     return {
-        blacklist:[]
+        search: "",
     };
   },
   components: {
@@ -60,7 +60,7 @@ export default {
         this.updateBlackList();
       },
       async updateBlackList(){
-        this.blacklist=await getBlacklist();
+        await getBlacklist();
       }
   },
   computed: {
@@ -73,7 +73,7 @@ export default {
         {
           text: "Blacklisted By",
           value: "",
-          filterable: false,
+          filterable: true,
         },
         {
           text: "Blacklisted For",

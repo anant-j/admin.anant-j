@@ -7,10 +7,9 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    visitors: {
-      data:[],
-      dated:new Date()
-    },
+    visitors: [],
+    blacklist: {},
+    whitelist: {},
     selectedDate: getCurrentMonth()
   },
   modules: {

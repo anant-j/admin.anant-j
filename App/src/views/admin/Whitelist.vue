@@ -17,7 +17,7 @@
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="whitelist"
+        :items="Object.values(this.$store.state.whitelist)"
         class="elevation-1"
         :search="search"
       >
@@ -47,7 +47,6 @@ export default {
   data() {
     return {
       search: "",
-      whitelist: [],
     };
   },
   components: {},
@@ -60,7 +59,7 @@ export default {
       this.updateWhiteList();
     },
     async updateWhiteList() {
-      this.whitelist = await getWhitelist();
+      await getWhitelist();
     },
   },
   computed: {

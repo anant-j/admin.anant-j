@@ -4,9 +4,7 @@
       <div>
         <v-col>
           <DashBoardCard
-            :title="
-              'Total Visits This Month (' + this.$store.state.selectedDate + ')'
-            "
+            :title="'Total Visits This Month'"
             color="primary"
             :data="String(totalVisits)"
             :icon="'mdi-cursor-default-click'"
@@ -32,7 +30,7 @@
           </v-sheet>
         </v-card>
       </v-col>
-      <v-col cols="3">
+      <v-col cols="4">
         <GmapMap
           :center="center"
           :zoom="10"
@@ -49,6 +47,24 @@
           />
         </GmapMap>
       </v-col>
+      <div>
+        <v-col>
+          <DashBoardCard
+            :title="'Total Blacklisted'"
+            color="error"
+            :data="String(Object.keys(this.$store.state.blacklist).length)"
+            :icon="'mdi-account-cancel'"
+          />
+        </v-col>
+        <v-col>
+          <DashBoardCard
+            :title="'Total Whitelisted'"
+            color="success"
+            :data="String(Object.keys(this.$store.state.whitelist).length)"
+            :icon="'mdi-account-check'"
+          />
+        </v-col>
+      </div>
     </v-row>
     <v-card>
       <v-card-title>
@@ -79,18 +95,60 @@
       >
         <template v-slot:item="{ item }">
           <tr>
+            <td v-if="$store.state.blacklist[item.id]">{{$store.state.blacklist[item.id].label }}</td>
+            <td v-else-if="$store.state.whitelist[item.id]">{{$store.state.whitelist[item.id].label}}</td>
+            <td v-else>No label</td>
             <td>{{ item.id }}</td>
             <td>{{ item.visits.length }}</td>
             <td>{{ item.location.place }}</td>
             <td>{{ new Date(Math.max(...item.visits)).toLocaleString() }}</td>
             <td>
-              <v-icon small class="mr-2" @click="deleteUser(item.id)">
-                mdi-delete </v-icon
-              ><v-icon small class="mr-2" @click="blacklistUser(item.id)">
-                mdi-account-cancel </v-icon
-              ><v-icon small class="mr-2" @click="whitelistUser(item.id)">
-                mdi-account-check
-              </v-icon>
+                  <v-chip
+      class="ma-2"
+      color="red"
+      text-color="white"
+      @click="deleteUser(item.id)"
+    >
+      Delete
+    </v-chip>
+      <v-chip
+      v-if="!$store.state.blacklist[item.id]"
+      class="ma-2"
+      color="warning"
+      text-color="white"
+      @click="blacklistUser(item.id)"
+    >
+      Blacklist
+    </v-chip>
+        <v-chip
+      v-else
+      close
+      class="ma-2"
+      color="warning"
+      text-color="white"
+      @click:close="removeBlacklist(item.id)"
+    >
+      Blacklisted
+    </v-chip>
+      <v-chip
+      v-if="!$store.state.whitelist[item.id]"
+      class="ma-2"
+      color="info"
+      text-color="white"
+      @click="whitelistUser(item.id)"
+    >
+      Whitelist
+    </v-chip>
+        <v-chip
+      v-else
+      close
+      class="ma-2"
+      color="success"
+      text-color="white"
+      @click:close="removeWhitelist(item.id)"
+    >
+      Whitelisted
+    </v-chip>
             </td>
           </tr>
         </template>
@@ -106,8 +164,12 @@ import {
   deleteVisitor,
   blacklist,
   whitelist,
+  getBlacklist,
+  getWhitelist,
+  removeFromBlacklist,
+  removeFromWhitelist
 } from "../../firebase_config";
-import { getAllMonths, getCurrentMonth, sameDay } from "../../utilities";
+import { getAllMonths, sameDay } from "../../utilities";
 export default {
   data() {
     return {
@@ -123,7 +185,7 @@ export default {
     DashBoardCard,
   },
   created() {
-    getAllVisitorData(getCurrentMonth());
+    this.refreshData();
   },
   methods: {
     deleteUser(id) {
@@ -132,17 +194,29 @@ export default {
     blacklistUser(id) {
       blacklist(id);
     },
-    refreshData() {
-      getAllVisitorData(this.$store.state.selectedDate);
-    },
     whitelistUser(id) {
       whitelist(id);
+    },
+    removeBlacklist(id){
+      removeFromBlacklist(id);
+    },
+    removeWhitelist(id){
+      removeFromWhitelist(id);
+    },
+    refreshData() {
+      getAllVisitorData(this.$store.state.selectedDate);
+      getBlacklist();
+      getWhitelist();
     },
   },
   computed: {
     headers() {
       return [
         {
+          text: "Label",
+          value: "label",
+        },
+{
           text: "Id",
           value: "id",
         },
@@ -161,6 +235,8 @@ export default {
         },
         {
           text: "Actions",
+          filterable: false,
+          sortable: false,
         },
       ];
     },
@@ -184,7 +260,7 @@ export default {
         const newDate = new Date(minDate);
         return `${newDate
           .toDateString()
-          .substr(4)} | ${newDate.toTimeString().substr(0, 8)}`;
+          .substr(4)} | ${newDate.toLocaleString().substr(11)}`;
       }
       return "No data";
     },
