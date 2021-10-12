@@ -57,7 +57,14 @@
             <td>{{ item.id }}</td>
             <td>{{ item.visits.length }}</td>
             <td>{{ item.location.place }}</td>
-            <td>{{ new Date(Math.max(...item.visits)) }}</td>
+            <td>{{ new Date(Math.max(...item.visits)).toLocaleString() }}</td>
+            <td><v-icon
+        small
+        class="mr-2"
+        @click="this.alert('hello')"
+      >
+        mdi-pencil
+      </v-icon></td>
           </tr>
         </template>
       </v-data-table>
@@ -139,6 +146,9 @@ export default {
         {
           text: "Last Visit",
           value: `visits`,
+        },
+         {
+          text: "Actions",
         },
       ];
     },

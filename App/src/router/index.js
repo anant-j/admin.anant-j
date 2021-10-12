@@ -4,6 +4,7 @@ import firebase from 'firebase';
 import Login from '../views/Login';
 
 import Dashboard from '../views/admin/Dashboard';
+import Blacklist from '../views/admin/Blacklist';
 
 Vue.use(VueRouter)
 
@@ -19,6 +20,7 @@ const routes = [
     component: () => import('../views/admin/AdminHome.vue'),
     children: [
       { path: '', component: Dashboard },
+      { path: 'blacklist', component: Blacklist },
     ],
     meta: {
       requiresAuth: true

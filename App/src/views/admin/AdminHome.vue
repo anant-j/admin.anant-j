@@ -44,10 +44,11 @@ import firebase from 'firebase';
 export default {
   data: () => ({
     dark: false,
-    path: '/admin',
+    path: '/',
     drawer: false,
     menus: [
       { path: '', title: 'Dashboard', icon: 'mdi-view-dashboard' },
+      { path: 'blacklist', title: 'Blacklist', icon: 'mdi-view-dashboard' },
     ]
   }),
   created(){
