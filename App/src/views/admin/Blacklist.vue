@@ -23,17 +23,31 @@
       >
         <template v-slot:item="{ item }">
           <tr>
+            <td>{{ item.label }}</td>
             <td>{{ item.id }}</td>
             <td>{{ item.blackListedBy }}</td>
             <td>{{ item.blackListedFor }}</td>
-            <td>{{ new Date(item.blackListedOn.seconds*1000).toLocaleString() }}</td>
-            <td><v-icon
-        small
-        class="mr-2"
-        @click="remove(item.id)"
-      >
-        mdi-delete
-      </v-icon></td>
+            <td>
+              {{ new Date(item.blackListedOn.seconds * 1000).toLocaleString() }}
+            </td>
+            <td>
+              <v-chip
+                class="ma-2"
+                color="info"
+                text-color="white"
+                @click="remove(item.id)"
+              >
+                Blacklisted
+              </v-chip>
+              <v-chip
+                class="ma-2"
+                color="green"
+                text-color="white"
+                @click="open(item.id)"
+              >
+                Open
+              </v-chip>
+            </td>
           </tr>
         </template>
       </v-data-table>
@@ -46,26 +60,28 @@ import { getBlacklist, removeFromBlacklist } from "../../firebase_config";
 export default {
   data() {
     return {
-        search: "",
+      search: "",
     };
   },
-  components: {
-  },
+  components: {},
   created() {
     this.updateBlackList();
   },
   methods: {
-      remove(id){
-        removeFromBlacklist(id);
-        this.updateBlackList();
-      },
-      async updateBlackList(){
-        await getBlacklist();
-      }
+    remove(id) {
+      removeFromBlacklist(id);
+      this.updateBlackList();
+    },
+    async updateBlackList() {
+      await getBlacklist();
+    },
   },
   computed: {
-        headers() {
+    headers() {
       return [
+        {
+          text: "Label",
+        },
         {
           text: "Id",
           value: "id",
@@ -83,7 +99,7 @@ export default {
           text: "Blacklisted on",
           value: ``,
         },
-         {
+        {
           text: "Actions",
         },
       ];

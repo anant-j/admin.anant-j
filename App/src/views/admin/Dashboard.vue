@@ -95,60 +95,72 @@
       >
         <template v-slot:item="{ item }">
           <tr>
-            <td v-if="$store.state.blacklist[item.id]">{{$store.state.blacklist[item.id].label }}</td>
-            <td v-else-if="$store.state.whitelist[item.id]">{{$store.state.whitelist[item.id].label}}</td>
+            <td v-if="$store.state.blacklist[item.id]">
+              {{ $store.state.blacklist[item.id].label }}
+            </td>
+            <td v-else-if="$store.state.whitelist[item.id]">
+              {{ $store.state.whitelist[item.id].label }}
+            </td>
             <td v-else>No label</td>
             <td>{{ item.id }}</td>
             <td>{{ item.visits.length }}</td>
             <td>{{ item.location.place }}</td>
             <td>{{ new Date(Math.max(...item.visits)).toLocaleString() }}</td>
             <td>
-                  <v-chip
-      class="ma-2"
-      color="red"
-      text-color="white"
-      @click="deleteUser(item.id)"
-    >
-      Delete
-    </v-chip>
-      <v-chip
-      v-if="!$store.state.blacklist[item.id]"
-      class="ma-2"
-      color="warning"
-      text-color="white"
-      @click="blacklistUser(item.id)"
-    >
-      Blacklist
-    </v-chip>
-        <v-chip
-      v-else
-      close
-      class="ma-2"
-      color="warning"
-      text-color="white"
-      @click:close="removeBlacklist(item.id)"
-    >
-      Blacklisted
-    </v-chip>
-      <v-chip
-      v-if="!$store.state.whitelist[item.id]"
-      class="ma-2"
-      color="info"
-      text-color="white"
-      @click="whitelistUser(item.id)"
-    >
-      Whitelist
-    </v-chip>
-        <v-chip
-      v-else
-      close
-      class="ma-2"
-      color="success"
-      text-color="white"
-      @click:close="removeWhitelist(item.id)"
-    >
-      Whitelisted
-    </v-chip>
+              <v-chip
+                class="ma-2"
+                color="red"
+                text-color="white"
+                @click="deleteUser(item.id)"
+              >
+                Delete
+              </v-chip>
+              <v-chip
+                v-if="!$store.state.blacklist[item.id]"
+                class="ma-2"
+                color="warning"
+                text-color="white"
+                @click="blacklistUser(item.id)"
+              >
+                Blacklist
+              </v-chip>
+              <v-chip
+                v-else
+                close
+                class="ma-2"
+                color="warning"
+                text-color="white"
+                @click:close="removeBlacklist(item.id)"
+              >
+                Blacklisted
+              </v-chip>
+              <v-chip
+                v-if="!$store.state.whitelist[item.id]"
+                class="ma-2"
+                color="info"
+                text-color="white"
+                @click="whitelistUser(item.id)"
+              >
+                Whitelist
+              </v-chip>
+              <v-chip
+                v-else
+                close
+                class="ma-2"
+                color="success"
+                text-color="white"
+                @click:close="removeWhitelist(item.id)"
+              >
+                Whitelisted
+              </v-chip>
+              <v-chip
+                class="ma-2"
+                color="blue"
+                text-color="white"
+                @click="openPage(item.id)"
+              >
+                Open
+              </v-chip>
             </td>
           </tr>
         </template>
@@ -167,7 +179,7 @@ import {
   getBlacklist,
   getWhitelist,
   removeFromBlacklist,
-  removeFromWhitelist
+  removeFromWhitelist,
 } from "../../firebase_config";
 import { getAllMonths, sameDay } from "../../utilities";
 export default {
@@ -188,8 +200,8 @@ export default {
     this.refreshData();
   },
   methods: {
-    deleteUser(id) {
-      deleteVisitor(id);
+    async deleteUser(id) {
+      await deleteVisitor(id);
     },
     blacklistUser(id) {
       blacklist(id);
@@ -197,16 +209,19 @@ export default {
     whitelistUser(id) {
       whitelist(id);
     },
-    removeBlacklist(id){
+    removeBlacklist(id) {
       removeFromBlacklist(id);
     },
-    removeWhitelist(id){
+    removeWhitelist(id) {
       removeFromWhitelist(id);
     },
     refreshData() {
       getAllVisitorData(this.$store.state.selectedDate);
       getBlacklist();
       getWhitelist();
+    },
+    openPage(id) {
+      alert(id);
     },
   },
   computed: {
@@ -216,7 +231,7 @@ export default {
           text: "Label",
           value: "label",
         },
-{
+        {
           text: "Id",
           value: "id",
         },

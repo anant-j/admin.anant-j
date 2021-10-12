@@ -60,11 +60,12 @@ export async function getWhitelist() {
   store.state.whitelist = final;
 }
 
-export function deleteVisitor(visitorId) {
-  db.collection(store.state.selectedDate)
+export async function deleteVisitor(visitorId) {
+  await db
+    .collection(store.state.selectedDate)
     .doc(visitorId)
     .delete();
-  getAllVisitorData(store.state.selectedDate);
+  await getAllVisitorData(store.state.selectedDate);
 }
 
 export function blacklist(visitorId) {

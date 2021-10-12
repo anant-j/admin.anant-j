@@ -30,9 +30,22 @@
               {{ new Date(item.whitelistedOn.seconds * 1000).toLocaleString() }}
             </td>
             <td>
-              <v-icon small class="mr-2" @click="remove(item.id)">
-                mdi-delete
-              </v-icon>
+              <v-chip
+                class="ma-2"
+                color="info"
+                text-color="white"
+                @click="remove(item.id)"
+              >
+                Whitelisted
+              </v-chip>
+              <v-chip
+                class="ma-2"
+                color="green"
+                text-color="white"
+                @click="open(item.id)"
+              >
+                Open
+              </v-chip>
             </td>
           </tr>
         </template>
@@ -61,6 +74,9 @@ export default {
     async updateWhiteList() {
       await getWhitelist();
     },
+    // open(id) {
+
+    // },
   },
   computed: {
     headers() {
