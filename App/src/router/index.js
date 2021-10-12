@@ -4,8 +4,6 @@ import firebase from 'firebase';
 import Login from '../views/Login';
 
 import Dashboard from '../views/admin/Dashboard';
-import Categories from '../views/admin/Categories';
-import Sounds from '../views/admin/Sounds';
 
 Vue.use(VueRouter)
 
@@ -20,8 +18,6 @@ const routes = [
     component: () => import('../views/admin/AdminHome.vue'),
     children: [
       { path: '', component: Dashboard },
-      { path: 'sounds', component: Sounds },
-      { path: 'categories', component: Categories },
     ],
     meta: {
       requiresAuth: true

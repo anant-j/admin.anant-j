@@ -1,102 +1,192 @@
 <template>
-    <div>
-        <v-row>
-            <v-col cols="6">
-                <DashBoardCard :title="'Number of Sounds'" color="primary" :data="sounds.length" 
-                :icon="'mdi-playlist-music'" />
-            </v-col>
-            <v-col cols="6">
-                <DashBoardCard :title="'Number of Category'" color="error" :data="categories.length"
-                :icon = "'mdi-folder-multiple'" />
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12">
-
-                <v-simple-table class="elevation-4">
-                    <template v-slot:top>
-                        <v-toolbar flat>
-                            <v-toolbar-title>Number of Sounds per Category</v-toolbar-title>
-                            <v-divider class="mx-4" inset vertical/> 
-                            <v-spacer />
-                        </v-toolbar>
-                    </template>
-                    <template v-slot:default>
-                        <thead>
-                            <tr>
-                            <th class="text-left">Category Name</th>
-                            <th class="text-left">Number of Sounds</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(group, category_id) in groups" :key="category_id">
-                            <td>{{ getCategoryById(category_id).title }}</td>
-                            <td>{{ group.length }}</td>
-                            </tr>
-                        </tbody>
-                    </template>
-                </v-simple-table>
-            </v-col>
-            <!--
-            <div v-for="(group, category_id) in groups" :key="category_id">
-                <h2>{{ getCategoryById(category_id).title }}</h2>
-                <p>{{ group.length }}</p>
-            </div>
-            -->
-        </v-row>
-    </div>
+  <div>
+    <v-row>
+      <v-col cols="4">
+        <DashBoardCard
+          :title="'Total Visits This Month (' + getCurrentMonth() + ')'"
+          color="primary"
+          :data="String(totalVisits)"
+          :icon="'mdi-cursor-default-click'"
+        />
+      </v-col>
+      <v-col cols="3">
+        <DashBoardCard
+          :title="'Last visit on'"
+          color="warning"
+          :data="latestVisit"
+          :icon="'mdi-clock'"
+        />
+      </v-col>
+      <v-col>
+        <v-card elevation="15" outlined>
+          <v-sheet class="v-sheet--offset" color="cyan" elevation="15">
+            -- {{getBarValues.max}}
+            <v-sparkline
+              :labels="getBarValues.dates"
+              :value="getBarValues.values"
+              smooth=10
+              color="white"
+              line-width="2"
+              padding="16"
+              auto-draw
+            ></v-sparkline>
+            -- 0<br>
+            ......From : {{getBarValues.leftMonth}} {{getBarValues.dates[0]}}
+            | To : {{getBarValues.rightMonth}} {{getBarValues.dates[15]}}
+          </v-sheet>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-card>
+      <v-card-title>
+        Visitors
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field>
+        <v-btn @click="getCurrentMonthData()">
+          <v-icon>mdi-refresh-circle</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="this.$store.state.visitors.data"
+        :search="search"
+      ></v-data-table>
+    </v-card>
+  </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import DashBoardCard from '../../components/DashBoardCard';
-
-
-function groupBy(array, key){
-  const result = {}
-  array.forEach(item => {
-    if (!result[item[key]]){
-      result[item[key]] = []
-    }
-    result[item[key]].push(item)
-  })
-  return result
-}
-
+import DashBoardCard from "../../components/DashBoardCard";
+import { getAllVisitorData } from "../../firebase_config.js";
 export default {
-    data() {
-        return { }
+  data() {
+    return {
+      search: "",
+      visits: {},
+      value: [200, 675, 410, 390, 310, 460, 250, 240],
+    };
+  },
+  components: {
+    DashBoardCard,
+  },
+  created() {
+    this.getCurrentMonthData();
+  },
+  methods: {
+    getCurrentMonth() {
+      var date = new Date();
+      var dateString = `${this.getMonthName(
+        date.getMonth()
+      )} ${date.getFullYear()}`;
+      return dateString;
     },
-    components: {
-        DashBoardCard
+    getCurrentMonthData() {
+      getAllVisitorData(this.getCurrentMonth());
+      return;
     },
-    created() {
-        this.loadCategories;
-        this.sounds;
+    getMonthName(id) {
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      return monthNames[id];
     },
-    methods: {
-        getCategoryById: function(id) {
-            let category = this.categories.filter(c => c.id == id)[0];
-            if(category === undefined) {
-                console.log('undefined qarşim');
-                return {title: 'Unknown'};
-            }
-            return category;
-        }
+    newVal(id) {
+      return id * 2;
     },
-    computed: {
-        ...mapActions({
-            loadCategories: 'categories/loadCategories',
-            loadSounds: 'sounds/loadSounds'
-        }),
-        ...mapGetters({
-            categories: 'categories/getCategories',
-            sounds: 'sounds/getSounds'
-        }),
-        groups(){
-            return groupBy(this.sounds, 'category_id')
-        }
-    }
+    sameDay(d1, d2) {
+  return d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
 }
-
+  },
+  computed: {
+    headers() {
+      return [
+        {
+          text: "Id",
+          value: "id",
+        },
+        {
+          text: "Visits this month",
+          value: "visits.length",
+          filterable: false,
+        },
+        {
+          text: "Visits this month",
+          value: "location.place",
+        },
+      ];
+    },
+    totalVisits() {
+      let totalCount = 0;
+      for (const key of this.$store.state.visitors.data) {
+        totalCount += key.visits.length;
+      }
+      return totalCount;
+    },
+    latestVisit() {
+      let minDate = 0;
+      for (const key of this.$store.state.visitors.data) {
+        for (const visit of key.visits) {
+          if (visit.seconds > minDate) {
+            minDate = visit.seconds;
+          }
+        }
+      }
+      const newDate = new Date(minDate * 1000);
+      return `${newDate
+        .toDateString()
+        .substr(4)} | ${newDate.toTimeString().substr(0, 8)}`;
+    },
+    getBarValues() {
+      const arr1 = [];
+      const arr2 = [];
+      const today = new Date();
+      const out = new Date();
+      let maxVal=0;
+      out.setMonth(out.getMonth() - 1);
+      out.setDate(out.getDate() + 15);
+      const final = {leftMonth:this.getMonthName(out.getMonth())};
+      while (out <= today) {
+        arr1.push(out.getDate());
+        arr2.push(0);
+        for (const key of this.$store.state.visitors.data) {
+        for (const visit of key.visits) {
+          if (this.sameDay(new Date(visit.seconds * 1000),out)) {
+            const newVal = 1+arr2.pop();
+            arr2.push(newVal);
+            if(newVal>maxVal){
+              maxVal=newVal;
+            }
+          }
+        }
+      }
+        out.setDate(out.getDate() + 1);
+      }
+      console.log(arr1,arr2)
+      final["dates"] = arr1;
+      final["values"] = arr2;
+      final["rightMonth"] =this.getMonthName(out.getMonth());
+      final["max"] = maxVal;
+      return final;
+    },
+  },
+};
 </script>

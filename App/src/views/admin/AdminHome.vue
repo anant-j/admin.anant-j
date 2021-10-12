@@ -18,12 +18,12 @@
 
     <v-app-bar app clipped-left dark color="primary">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>Anant-j</v-toolbar-title>
       <v-spacer />
       <v-btn text icon @click="dark = !dark">
         <v-icon>{{ dark ? 'mdi-brightness-4' : 'mdi-brightness-6'}}</v-icon>
       </v-btn>
-      <v-btn text icon @click="logOut()"><v-icon>mdi-power</v-icon></v-btn>
+      <v-btn text @click="logOut()">Logout</v-btn>
     </v-app-bar>
 
     <v-main>
@@ -35,42 +35,23 @@
         </v-row>
       </v-container>
     </v-main>
-
-    <v-footer app>
-      <div class="flex text-center">
-        <span class="lead text--secondary text-center" >Software & Design ❤️
-          <a href="https://ahm3tcelik.github.io" class="text-decoration-none" target="_blank">Ahmet ÇELİK</a>
-        </span>
-      </div>
-    </v-footer>
   </v-app>
 </template>
 
 <script>
 import firebase from 'firebase';
-import { mapActions } from 'vuex';
 
 export default {
   data: () => ({
     dark: false,
     path: '/admin',
-    drawer: null,
+    drawer: false,
     menus: [
       { path: '', title: 'Dashboard', icon: 'mdi-view-dashboard' },
-      // { path: '/sounds', title: 'Sounds', icon: 'mdi-playlist-music'},
-      // { path: '/categories', title: 'Categories', icon: 'mdi-folder-multiple' },
     ]
   }),
-  created() {
-    this.dark = this.$vuetify.theme.dark
-    this.loadSounds;
-    this.loadCategories;
-  },
-  computed: {
-    ...mapActions({
-        loadSounds: 'sounds/loadSounds',
-        loadCategories: 'categories/loadCategories',
-    }),
+  created(){
+    this.dark =  this.$store.state.config.dark;
   },
   methods: {
     logOut() {
@@ -87,6 +68,7 @@ export default {
   },
   watch: {
     dark: function() {
+      this.$store.state.config.dark = this.dark;
       this.$vuetify.theme.dark = this.dark;
     }
   }

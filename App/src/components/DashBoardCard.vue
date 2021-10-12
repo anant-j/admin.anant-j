@@ -1,12 +1,12 @@
 <template>
     <v-card :color="color" elevation="15" outlined>
+        <v-card-subtitle class="white--text">
+            <h1>{{ title }}</h1>
+        </v-card-subtitle>
         <v-card-title>
             <v-icon color="white" large left>{{ icon }}</v-icon>
-            <span class="white--text">{{ data }}</span>
+            <h2 class="white--text">{{ data }}</h2>
         </v-card-title>
-        <v-card-subtitle class="white--text">
-            {{ title }}
-        </v-card-subtitle>
     </v-card>
 </template>
 
@@ -15,7 +15,7 @@ export default {
     props: {
         title: String,
         color: String,
-        data: Number,
+        data: String,
         icon: String
     }
 }
