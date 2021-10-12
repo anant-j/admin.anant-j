@@ -59,8 +59,8 @@ export default {
         removeFromBlacklist(id);
         this.updateBlackList();
       },
-      updateBlackList(){
-        this.blacklist=getBlacklist();
+      async updateBlackList(){
+        this.blacklist=await getBlacklist();
       }
   },
   computed: {

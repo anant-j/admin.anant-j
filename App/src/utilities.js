@@ -8,9 +8,15 @@ export function getCurrentMonth() {
 
 export function getAllMonths(){
     var year = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
     var final = [];
-    for (let index = 1; index <= 12; index++) {
-        final.push(`${getMonthName(index)} ${year}`);
+    for (let index = currentMonth; index <= currentMonth+12; index++) {
+        let newYear = year;
+        if(index<12){
+            newYear = year-1;
+        }
+        const curr = index % 12;
+        final.push(`${getMonthName(curr)} ${newYear}`);
     }
     return final;
 }

@@ -14,9 +14,9 @@ firebase.initializeApp(configOptions);
 
 export default firebase;
 var db = firebase.firestore();
-export function getAllVisitorData(dateString) {
+export async function getAllVisitorData(dateString) {
   const final = [];
-  db.collection(dateString)
+  await db.collection(dateString)
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -29,9 +29,9 @@ export function getAllVisitorData(dateString) {
   store.state.visitors["data"] = final;
 }
 
-export function getBlacklist(){
-    const final = [];
-  db.collection("Blacklist")
+export async function getBlacklist() {
+  const final = [];
+  await db.collection("Blacklist")
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -40,12 +40,12 @@ export function getBlacklist(){
         final.push(data);
       });
     });
-    return final;
+  return final;
 }
 
-export function getWhitelist(){
-    const final = [];
-  db.collection("Whitelist")
+export async function getWhitelist() {
+  const final = [];
+  await db.collection("Whitelist")
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -54,7 +54,7 @@ export function getWhitelist(){
         final.push(data);
       });
     });
-    return final;
+  return final;
 }
 
 export function deleteVisitor(visitorId) {
@@ -68,8 +68,8 @@ export function blacklist(visitorId) {
   var confirmation = confirm(`Blacklist: ${visitorId}?`);
   if (!confirmation) return;
   db.collection("Whitelist")
-  .doc(visitorId)
-  .delete();
+    .doc(visitorId)
+    .delete();
   db.collection("Blacklist")
     .doc(visitorId)
     .set({
@@ -80,9 +80,9 @@ export function blacklist(visitorId) {
 }
 
 export function removeFromBlacklist(visitorId) {
-    var confirmation = confirm(`Remove from Blacklist: ${visitorId}?`);
-    if (!confirmation) return;
-    db.collection("Blacklist")
+  var confirmation = confirm(`Remove from Blacklist: ${visitorId}?`);
+  if (!confirmation) return;
+  db.collection("Blacklist")
     .doc(visitorId)
     .delete();
 }
@@ -90,21 +90,29 @@ export function removeFromBlacklist(visitorId) {
 export function whitelist(visitorId) {
   var confirmation = confirm(`Whitelist: ${visitorId}?`);
   if (!confirmation) return;
+  var label = prompt("Please enter a label");
+  while (!label) {
+    alert("You must enter a label");
+    label = prompt("Please enter a label");
+    return;
+  }
+  db.collection("Blacklist");
   db.collection("Blacklist")
-  .doc(visitorId)
-  .delete();
+    .doc(visitorId)
+    .delete();
   db.collection("Whitelist")
     .doc(visitorId)
     .set({
       whitelistedOn: new Date(),
       whitelistedBy: store.state.auth.user.data.email,
+      label: label
     });
 }
 
 export function removeFromWhitelist(visitorId) {
-    var confirmation = confirm(`Remove from Whitelist: ${visitorId}?`);
-    if (!confirmation) return;
-    db.collection("Whitelist")
+  var confirmation = confirm(`Remove from Whitelist: ${visitorId}?`);
+  if (!confirmation) return;
+  db.collection("Whitelist")
     .doc(visitorId)
     .delete();
 }

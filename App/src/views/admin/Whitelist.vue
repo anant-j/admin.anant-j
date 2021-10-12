@@ -23,6 +23,7 @@
       >
         <template v-slot:item="{ item }">
           <tr>
+            <td>{{ item.label }}</td>
             <td>{{ item.id }}</td>
             <td>{{ item.whitelistedBy }}</td>
             <td>
@@ -45,6 +46,7 @@ import { getWhitelist, removeFromWhitelist } from "../../firebase_config";
 export default {
   data() {
     return {
+      search: "",
       whitelist: [],
     };
   },
@@ -57,13 +59,16 @@ export default {
       removeFromWhitelist(id);
       this.updateWhiteList();
     },
-    updateWhiteList() {
-      this.whitelist = getWhitelist();
+    async updateWhiteList() {
+      this.whitelist = await getWhitelist();
     },
   },
   computed: {
     headers() {
       return [
+        {
+          text: "Label",
+        },
         {
           text: "Id",
           value: "id",
