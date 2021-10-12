@@ -1,38 +1,32 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="4">
-        <DashBoardCard
-          :title="'Total Visits This Month (' + getCurrentMonth() + ')'"
-          color="primary"
-          :data="String(totalVisits)"
-          :icon="'mdi-cursor-default-click'"
-        />
-      </v-col>
+      <div cols="3">
+        <v-col>
+          <DashBoardCard
+            :title="'Total Visits This Month (' + getCurrentMonth() + ')'"
+            color="primary"
+            :data="String(totalVisits)"
+            :icon="'mdi-cursor-default-click'"
+          />
+        </v-col>
+        <v-col>
+          <DashBoardCard
+            :title="'Last visit on'"
+            color="warning"
+            :data="latestVisit"
+            :icon="'mdi-clock'"
+          />
+        </v-col>
+      </div>
       <v-col cols="3">
-        <DashBoardCard
-          :title="'Last visit on'"
-          color="warning"
-          :data="latestVisit"
-          :icon="'mdi-clock'"
-        />
-      </v-col>
-      <v-col>
         <v-card elevation="15" outlined>
-          <v-sheet class="v-sheet--offset" color="cyan" elevation="15">
-            -- {{getBarValues.max}}
-            <v-sparkline
-              :labels="getBarValues.dates"
-              :value="getBarValues.values"
-              smooth=10
-              color="white"
-              line-width="2"
-              padding="16"
-              auto-draw
-            ></v-sparkline>
-            -- 0<br>
-            ......From : {{getBarValues.leftMonth}} {{getBarValues.dates[0]}}
-            | To : {{getBarValues.rightMonth}} {{getBarValues.dates[15]}}
+          <v-sheet class="v-sheet--offset" color="dark" elevation="15">
+            <apexchart
+              type="line"
+              :options="getBarValues.options"
+              :series="getBarValues.series"
+            ></apexchart>
           </v-sheet>
         </v-card>
       </v-col>
@@ -52,22 +46,21 @@
           <v-icon>mdi-refresh-circle</v-icon>
         </v-btn>
       </v-card-title>
-        <v-data-table
-    :headers="headers"
-    :items="this.$store.state.visitors.data"
-    class="elevation-1"
-    :search="search"
-  >
-     <template
-    v-slot:item="{ item }">
-    <tr>
-      <td>{{ item.id }}</td>
-      <td>{{ item.visits.length }}</td>
-      <td>{{ item.location.place}}</td>
-      <td>{{new Date(Math.max( ...item.visits))}}</td>
-    </tr>
-     </template>
-  </v-data-table>
+      <v-data-table
+        :headers="headers"
+        :items="this.$store.state.visitors.data"
+        class="elevation-1"
+        :search="search"
+      >
+        <template v-slot:item="{ item }">
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.visits.length }}</td>
+            <td>{{ item.location.place }}</td>
+            <td>{{ new Date(Math.max(...item.visits)) }}</td>
+          </tr>
+        </template>
+      </v-data-table>
     </v-card>
   </div>
 </template>
@@ -79,8 +72,6 @@ export default {
   data() {
     return {
       search: "",
-      visits: {},
-      value: [200, 675, 410, 390, 310, 460, 250, 240],
     };
   },
   components: {
@@ -122,10 +113,12 @@ export default {
       return id * 2;
     },
     sameDay(d1, d2) {
-  return d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
-}
+      return (
+        d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate()
+      );
+    },
   },
   computed: {
     headers() {
@@ -143,8 +136,8 @@ export default {
           text: "Location",
           value: "location.place",
         },
-                {
-          text: "LastVisit",
+        {
+          text: "Last Visit",
           value: `visits`,
         },
       ];
@@ -165,41 +158,60 @@ export default {
           }
         }
       }
-      const newDate =new Date(minDate);
-      return `${newDate
-        .toDateString()
-        .substr(4)} | ${newDate.toTimeString().substr(0, 8)}`;
+      if (minDate != 0) {
+        const newDate = new Date(minDate);
+        return `${newDate
+          .toDateString()
+          .substr(4)} | ${newDate.toTimeString().substr(0, 8)}`;
+      }
+      return "No data";
     },
     getBarValues() {
       const arr1 = [];
       const arr2 = [];
+      const final = {
+        options: {
+          xaxis: {
+            categories: arr1,
+            type: "datetime",
+          },
+          chart: {
+            toolbar: {
+              show: true,
+              tools: {
+                download: false,
+                selection: false,
+                zoom: true,
+                zoomin: false,
+                zoomout: false,
+                pan: false,
+                reset: true,
+              },
+            },
+          },
+        },
+        series: [],
+      };
       const today = new Date();
       const out = new Date();
-      let maxVal=0;
       out.setMonth(out.getMonth() - 1);
       out.setDate(out.getDate() + 15);
-      const final = {leftMonth:this.getMonthName(out.getMonth())};
       while (out <= today) {
-        arr1.push(out.getDate());
+        arr1.push(out.getTime());
         arr2.push(0);
         for (const key of this.$store.state.visitors.data) {
-        for (const visit of key.visits) {
-          if (this.sameDay(new Date(visit),out)) {
-            const newVal = 1+arr2.pop();
-            arr2.push(newVal);
-            if(newVal>maxVal){
-              maxVal=newVal;
+          for (const visit of key.visits) {
+            if (this.sameDay(new Date(visit), out)) {
+              const newVal = 1 + arr2.pop();
+              arr2.push(newVal);
             }
           }
         }
-      }
         out.setDate(out.getDate() + 1);
       }
-      console.log(arr1,arr2)
-      final["dates"] = arr1;
-      final["values"] = arr2;
-      final["rightMonth"] =this.getMonthName(out.getMonth());
-      final["max"] = maxVal;
+      final["options"]["xaxis"]["categories"] = arr1;
+      final["series"] = [{ name: "Visits", data: arr2 }];
+      // final["series"] =arr2;
       return final;
     },
   },
