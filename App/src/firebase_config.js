@@ -61,10 +61,7 @@ export async function getWhitelist() {
 }
 
 export async function deleteVisitor(visitorId) {
-  await db
-    .collection(store.state.selectedDate)
-    .doc(visitorId)
-    .delete();
+  await db.collection(store.state.selectedDate).doc(visitorId).delete();
   await getAllVisitorData(store.state.selectedDate);
 }
 
@@ -77,17 +74,13 @@ export function blacklist(visitorId) {
     label = prompt("Please enter a label");
     return;
   }
-  db.collection("Whitelist")
-    .doc(visitorId)
-    .delete();
-  db.collection("Blacklist")
-    .doc(visitorId)
-    .set({
-      blackListedFor: store.state.selectedDate,
-      blackListedOn: new Date(),
-      blackListedBy: store.state.auth.user.data.email,
-      label: label,
-    });
+  db.collection("Whitelist").doc(visitorId).delete();
+  db.collection("Blacklist").doc(visitorId).set({
+    blackListedFor: store.state.selectedDate,
+    blackListedOn: new Date(),
+    blackListedBy: store.state.auth.user.data.email,
+    label: label,
+  });
   getBlacklist();
   getWhitelist();
 }
@@ -95,9 +88,7 @@ export function blacklist(visitorId) {
 export function removeFromBlacklist(visitorId) {
   var confirmation = confirm(`Remove from Blacklist: ${visitorId}?`);
   if (!confirmation) return;
-  db.collection("Blacklist")
-    .doc(visitorId)
-    .delete();
+  db.collection("Blacklist").doc(visitorId).delete();
   getBlacklist();
 }
 
@@ -110,16 +101,12 @@ export function whitelist(visitorId) {
     label = prompt("Please enter a label");
     return;
   }
-  db.collection("Blacklist")
-    .doc(visitorId)
-    .delete();
-  db.collection("Whitelist")
-    .doc(visitorId)
-    .set({
-      whitelistedOn: new Date(),
-      whitelistedBy: store.state.auth.user.data.email,
-      label: label,
-    });
+  db.collection("Blacklist").doc(visitorId).delete();
+  db.collection("Whitelist").doc(visitorId).set({
+    whitelistedOn: new Date(),
+    whitelistedBy: store.state.auth.user.data.email,
+    label: label,
+  });
   getBlacklist();
   getWhitelist();
 }
@@ -127,8 +114,6 @@ export function whitelist(visitorId) {
 export function removeFromWhitelist(visitorId) {
   var confirmation = confirm(`Remove from Whitelist: ${visitorId}?`);
   if (!confirmation) return;
-  db.collection("Whitelist")
-    .doc(visitorId)
-    .delete();
+  db.collection("Whitelist").doc(visitorId).delete();
   getWhitelist();
 }

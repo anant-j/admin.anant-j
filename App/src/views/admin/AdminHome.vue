@@ -1,10 +1,13 @@
 <template>
   <v-app>
-    <v-navigation-drawer
-      v-model="drawer" app clipped>
+    <v-navigation-drawer v-model="drawer" app clipped>
       <v-list dense>
         <v-list-item-group color="primary">
-          <v-list-item v-for="(menu, index) in menus" :key="index" @click="goto(menu.path)">
+          <v-list-item
+            v-for="(menu, index) in menus"
+            :key="index"
+            @click="goto(menu.path)"
+          >
             <v-list-item-action>
               <v-icon>{{ menu.icon }}</v-icon>
             </v-list-item-action>
@@ -21,7 +24,7 @@
       <v-toolbar-title>Anant-j</v-toolbar-title>
       <v-spacer />
       <v-btn text icon @click="dark = !dark">
-        <v-icon>{{ dark ? 'mdi-brightness-4' : 'mdi-brightness-6'}}</v-icon>
+        <v-icon>{{ dark ? "mdi-brightness-4" : "mdi-brightness-6" }}</v-icon>
       </v-btn>
       <v-btn text @click="logOut()">Logout</v-btn>
     </v-app-bar>
@@ -39,21 +42,21 @@
 </template>
 
 <script>
-import firebase from 'firebase';
+import firebase from "firebase";
 
 export default {
   data: () => ({
     dark: false,
-    path: '/',
+    path: "/",
     drawer: false,
     menus: [
-      { path: '', title: 'Dashboard', icon: 'mdi-view-dashboard' },
-      { path: 'blacklist', title: 'Blacklist', icon: 'mdi-account-cancel' },
-      { path: 'whitelist', title: 'Whitelist', icon: 'mdi-account-check' },
-    ]
+      { path: "", title: "Dashboard", icon: "mdi-view-dashboard" },
+      { path: "blacklist", title: "Blacklist", icon: "mdi-account-cancel" },
+      { path: "whitelist", title: "Whitelist", icon: "mdi-account-check" },
+    ],
   }),
-  created(){
-    this.dark =  this.$store.state.config.dark;
+  created() {
+    this.dark = this.$store.state.config.dark;
   },
   methods: {
     logOut() {
@@ -61,18 +64,18 @@ export default {
         .auth()
         .signOut()
         .then(() => {
-          this.$router.replace({path: '/login'});
+          this.$router.replace({ path: "/login" });
         });
     },
     goto(newPath) {
-      this.$router.push({path: this.path + newPath}).catch(()=>{});
-    }
+      this.$router.push({ path: this.path + newPath }).catch(() => {});
+    },
   },
   watch: {
-    dark: function() {
+    dark: function () {
       this.$store.state.config.dark = this.dark;
       this.$vuetify.theme.dark = this.dark;
-    }
-  }
-}
+    },
+  },
+};
 </script>

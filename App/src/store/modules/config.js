@@ -3,7 +3,7 @@ const config = {
   state: {
     live: false,
     dark: true,
-    date: new Date()
+    date: new Date(),
   },
 };
 

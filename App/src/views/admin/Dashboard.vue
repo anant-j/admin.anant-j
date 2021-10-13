@@ -21,7 +21,7 @@
       </div>
       <v-col cols="3">
         <v-card>
-          <v-sheet class="v-sheet--offset" style="height:300px" color="dark">
+          <v-sheet class="v-sheet--offset" style="height: 300px" color="dark">
             <apexchart
               type="line"
               :options="getBarValues.options"
@@ -223,15 +223,15 @@ export default {
     openPage(id) {
       this.$router.push(`/visit?id=${id}`);
     },
-    getMaxDate(visitKeyMap){
+    getMaxDate(visitKeyMap) {
       let max = 0;
       for (const keyval of visitKeyMap) {
         if (keyval.time > max) {
-          max = keyval.time
+          max = keyval.time;
         }
       }
       return new Date(max).toLocaleString();
-    }
+    },
   },
   computed: {
     headers() {
@@ -282,9 +282,9 @@ export default {
       }
       if (minDate != 0) {
         const newDate = new Date(minDate);
-        return `${newDate
-          .toDateString()
-          .substr(4)} | ${newDate.toLocaleString().substr(11)}`;
+        return `${newDate.toDateString().substr(4)} | ${newDate
+          .toLocaleString()
+          .substr(11)}`;
       }
       return "No data";
     },

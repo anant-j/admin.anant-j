@@ -1,6 +1,6 @@
 <template>
-    <div>
-            <v-row>
+  <div>
+    <v-row>
       <div>
         <v-col>
           <DashBoardCard
@@ -66,46 +66,45 @@
         </v-col>
       </div> -->
     </v-row>
-        </div>
+  </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 import DashBoardCard from "../../components/DashBoardCard";
 export default {
-    name: 'Visit',
-    data() {
-        return {
-            id:0,
-            data:{}
-        }
-    },
-    components: {
+  name: "Visit",
+  data() {
+    return {
+      id: 0,
+      data: {},
+    };
+  },
+  components: {
     DashBoardCard,
   },
-    created(){
-        const nav = window.location.search.split('?id=')[1];
-        if(!nav){
-            this.$router.push('/');
-            return;
-        }
-        else{
-            this.id = nav;
-        }
-        this.getDataFromServer(this.id);
-    },
-    methods:{
-        async getDataFromServer(id){
-            const result = await axios.get(`https://api.fpjs.io/visitors/${id}?token=token`);
-            this.data = result.data.visits;
-        }   
-    },
-    computed:{
-    totalVisits(){
-        return this.data.length;
-    },
+  created() {
+    const nav = window.location.search.split("?id=")[1];
+    if (!nav) {
+      this.$router.push("/");
+      return;
+    } else {
+      this.id = nav;
     }
-
-}
-
+    this.getDataFromServer(this.id);
+  },
+  methods: {
+    async getDataFromServer(id) {
+      const result = await axios.get(
+        `https://api.fpjs.io/visitors/${id}?token=token`
+      );
+      this.data = result.data.visits;
+    },
+  },
+  computed: {
+    totalVisits() {
+      return this.data.length;
+    },
+  },
+};
 </script>

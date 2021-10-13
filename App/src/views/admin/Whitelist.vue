@@ -74,9 +74,9 @@ export default {
     async updateWhiteList() {
       await getWhitelist();
     },
-    openPage(id){
-              this.$router.push(`/visit?id=${id}`);
-    }
+    openPage(id) {
+      this.$router.push(`/visit?id=${id}`);
+    },
   },
   computed: {
     headers() {

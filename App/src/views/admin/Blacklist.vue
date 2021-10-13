@@ -75,9 +75,9 @@ export default {
     async updateBlackList() {
       await getBlacklist();
     },
-    openPage(id){
-              this.$router.push(`/visit?id=${id}`);
-    }
+    openPage(id) {
+      this.$router.push(`/visit?id=${id}`);
+    },
   },
   computed: {
     headers() {
