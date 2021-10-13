@@ -4,13 +4,6 @@
       <v-card-title>
         Blacklist
         <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
         <v-btn @click="updateBlackList()">
           <v-icon>mdi-refresh-circle</v-icon>
         </v-btn>
@@ -19,7 +12,6 @@
         :headers="headers"
         :items="Object.values(this.$store.state.blacklist)"
         class="elevation-1"
-        :search="search"
       >
         <template v-slot:item="{ item }">
           <tr>
@@ -59,9 +51,7 @@
 import { getBlacklist, removeFromBlacklist } from "../../firebase_config";
 export default {
   data() {
-    return {
-      search: "",
-    };
+    return {};
   },
   components: {},
   created() {

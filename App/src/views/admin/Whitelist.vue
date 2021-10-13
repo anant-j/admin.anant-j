@@ -4,13 +4,6 @@
       <v-card-title>
         Whitelist
         <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
         <v-btn @click="updateWhiteList()">
           <v-icon>mdi-refresh-circle</v-icon>
         </v-btn>
@@ -19,7 +12,6 @@
         :headers="headers"
         :items="Object.values(this.$store.state.whitelist)"
         class="elevation-1"
-        :search="search"
       >
         <template v-slot:item="{ item }">
           <tr>
@@ -58,9 +50,7 @@
 import { getWhitelist, removeFromWhitelist } from "../../firebase_config";
 export default {
   data() {
-    return {
-      search: "",
-    };
+    return {};
   },
   components: {},
   created() {
