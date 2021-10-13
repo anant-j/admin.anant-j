@@ -42,8 +42,7 @@
 </template>
 
 <script>
-import firebase from "firebase";
-
+import { getAuth, signOut } from "firebase/auth";
 export default {
   data: () => ({
     dark: false,
@@ -60,12 +59,10 @@ export default {
   },
   methods: {
     logOut() {
-      firebase
-        .auth()
-        .signOut()
-        .then(() => {
-          this.$router.replace({ path: "/login" });
-        });
+      const auth = getAuth();
+      signOut(auth).then(() => {
+        this.$router.replace({ path: "/login" });
+      });
     },
     goto(newPath) {
       this.$router.push({ path: this.path + newPath }).catch(() => {});

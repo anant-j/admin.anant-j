@@ -53,7 +53,7 @@
                   ></v-progress-circular>
                 </span>
               </v-btn>
-              <v-btn
+              <!-- <v-btn
                 v-bind:disabled="disabled"
                 @click="createUser"
                 color="secondary"
@@ -65,7 +65,7 @@
                     color="primary"
                   ></v-progress-circular>
                 </span>
-              </v-btn>
+              </v-btn> -->
             </v-card-actions>
           </v-card>
         </v-col>
@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import firebase from "firebase";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 export default {
   data() {
@@ -96,10 +96,8 @@ export default {
     validate() {
       if (this.$refs.form.validate()) {
         this.disabled = true;
-
-        firebase
-          .auth()
-          .signInWithEmailAndPassword(this.email, this.password)
+        const auth = getAuth();
+        signInWithEmailAndPassword(auth, this.email, this.password)
           .then(() => {
             this.disabled = false;
             this.$router.replace({ path: "/" });
@@ -110,23 +108,23 @@ export default {
           });
       }
     },
-    createUser() {
-      if (this.$refs.form.validate()) {
-        this.disabled = true;
+    // createUser() {
+    //   if (this.$refs.form.validate()) {
+    //     this.disabled = true;
 
-        firebase
-          .auth()
-          .createUserWithEmailAndPassword(this.email, this.password)
-          .then(() => {
-            this.disabled = false;
-            this.$router.replace({ path: "/" });
-          })
-          .catch((err) => {
-            this.disabled = false;
-            this.error = err.message;
-          });
-      }
-    },
+    //     firebase
+    //       .auth()
+    //       .createUserWithEmailAndPassword(this.email, this.password)
+    //       .then(() => {
+    //         this.disabled = false;
+    //         this.$router.replace({ path: "/" });
+    //       })
+    //       .catch((err) => {
+    //         this.disabled = false;
+    //         this.error = err.message;
+    //       });
+    //   }
+    // },
   },
 };
 </script>

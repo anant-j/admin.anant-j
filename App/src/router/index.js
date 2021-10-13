@@ -1,8 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import firebase from "firebase";
 import Login from "../views/Login";
-
+import { getAuth } from "firebase/auth";
 import Dashboard from "../views/admin/Dashboard";
 import Blacklist from "../views/admin/Blacklist";
 import Whitelist from "../views/admin/Whitelist";
@@ -38,14 +37,15 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const auth = getAuth();
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!firebase.auth().currentUser) {
+    if (!auth.currentUser) {
       next({ name: "Login" });
     } else {
       next();
     }
   } else if (to.path == "/") {
-    if (firebase.auth().currentUser) {
+    if (auth.currentUser) {
       next({ path: "/" });
     } else {
       next();

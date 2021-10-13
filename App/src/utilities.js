@@ -1,13 +1,13 @@
 export function getCurrentMonth() {
-  var date = new Date();
-  var dateString = `${getMonthName(date.getMonth())} ${date.getFullYear()}`;
+  const date = new Date();
+  const dateString = `${getMonthName(date.getMonth())} ${date.getFullYear()}`;
   return dateString;
 }
 
 export function getAllMonths() {
-  var year = new Date().getFullYear();
+  const year = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
-  var final = [];
+  const final = [];
   for (let index = currentMonth; index <= currentMonth + 12; index++) {
     let newYear = year;
     if (index < 12) {

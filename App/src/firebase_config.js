@@ -1,4 +1,9 @@
-import * as firebase from "firebase";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore";
+import { setDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import store from "./store";
 
 const configOptions = {
@@ -10,110 +15,108 @@ const configOptions = {
   appId: process.env.VUE_APP_ID,
 };
 
-firebase.initializeApp(configOptions);
+const firebaseApp = initializeApp(configOptions);
+export const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
-export default firebase;
-var db = firebase.firestore();
 export async function getAllVisitorData(dateString) {
   const final = [];
   store.state.visitors = [];
-  await db
-    .collection(dateString)
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const data = JSON.parse(JSON.stringify(doc.data()));
-        data["id"] = doc.id;
-        final.push(data);
-      });
-    });
+  const querySnapshot = await getDocs(collection(db, dateString));
+  querySnapshot.forEach((doc) => {
+    const data = JSON.parse(JSON.stringify(doc.data()));
+    data["id"] = doc.id;
+    final.push(data);
+  });
   store.state.visitors = final;
 }
 
 export async function getBlacklist() {
   const final = {};
-  await db
-    .collection("Blacklist")
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const data = JSON.parse(JSON.stringify(doc.data()));
-        data["id"] = doc.id;
-        final[doc.id] = data;
-      });
-    });
+  const querySnapshot = await getDocs(collection(db, "Blacklist"));
+  querySnapshot.forEach((doc) => {
+    const data = JSON.parse(JSON.stringify(doc.data()));
+    data["id"] = doc.id;
+    final[doc.id] = data;
+  });
   store.state.blacklist = final;
 }
 
 export async function getWhitelist() {
   const final = {};
-  await db
-    .collection("Whitelist")
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const data = JSON.parse(JSON.stringify(doc.data()));
-        data["id"] = doc.id;
-        final[doc.id] = data;
-      });
-    });
+  const querySnapshot = await getDocs(collection(db, "Whitelist"));
+  querySnapshot.forEach((doc) => {
+    const data = JSON.parse(JSON.stringify(doc.data()));
+    data["id"] = doc.id;
+    final[doc.id] = data;
+  });
   store.state.whitelist = final;
 }
 
 export async function deleteVisitor(visitorId) {
-  await db.collection(store.state.selectedDate).doc(visitorId).delete();
+  await deleteDoc(doc(db, store.state.selectedDate, visitorId));
   await getAllVisitorData(store.state.selectedDate);
 }
 
-export function blacklist(visitorId) {
-  var confirmation = confirm(`Blacklist: ${visitorId}?`);
+export async function blacklist(visitorId) {
+  const confirmation = confirm(`Blacklist: ${visitorId}?`);
   if (!confirmation) return;
-  var label = prompt("Please enter a label");
+  let label = prompt("Please enter a label");
   while (!label) {
     alert("You must enter a label");
     label = prompt("Please enter a label");
     return;
   }
-  db.collection("Whitelist").doc(visitorId).delete();
-  db.collection("Blacklist").doc(visitorId).set({
-    blackListedFor: store.state.selectedDate,
-    blackListedOn: new Date(),
-    blackListedBy: store.state.auth.user.data.email,
-    label: label,
-  });
+  await deleteDoc(doc(db, "Whitelist", visitorId));
+  const dbref = doc(db, "Blacklist", visitorId);
+  setDoc(
+    dbref,
+    {
+      blackListedFor: store.state.selectedDate,
+      blackListedOn: new Date(),
+      blackListedBy: store.state.auth.user.data.email,
+      label: label,
+    },
+    { merge: true }
+  );
   getBlacklist();
   getWhitelist();
 }
 
-export function removeFromBlacklist(visitorId) {
-  var confirmation = confirm(`Remove from Blacklist: ${visitorId}?`);
+export async function removeFromBlacklist(visitorId) {
+  const confirmation = confirm(`Remove from Blacklist: ${visitorId}?`);
   if (!confirmation) return;
-  db.collection("Blacklist").doc(visitorId).delete();
+  await deleteDoc(doc(db, "Blacklist", visitorId));
   getBlacklist();
 }
 
-export function whitelist(visitorId) {
-  var confirmation = confirm(`Whitelist: ${visitorId}?`);
+export async function whitelist(visitorId) {
+  const confirmation = confirm(`Whitelist: ${visitorId}?`);
   if (!confirmation) return;
-  var label = prompt("Please enter a label");
+  let label = prompt("Please enter a label");
   while (!label) {
     alert("You must enter a label");
     label = prompt("Please enter a label");
     return;
   }
-  db.collection("Blacklist").doc(visitorId).delete();
-  db.collection("Whitelist").doc(visitorId).set({
-    whitelistedOn: new Date(),
-    whitelistedBy: store.state.auth.user.data.email,
-    label: label,
-  });
+  await deleteDoc(doc(db, "Blacklist", visitorId));
+  const dbref = doc(db, "Whitelist", visitorId);
+  setDoc(
+    dbref,
+    {
+      whitelistedOn: new Date(),
+      whitelistedBy: store.state.auth.user.data.email,
+      label: label,
+    },
+    { merge: true }
+  );
   getBlacklist();
   getWhitelist();
 }
 
-export function removeFromWhitelist(visitorId) {
-  var confirmation = confirm(`Remove from Whitelist: ${visitorId}?`);
+export async function removeFromWhitelist(visitorId) {
+  const confirmation = confirm(`Remove from Whitelist: ${visitorId}?`);
   if (!confirmation) return;
-  db.collection("Whitelist").doc(visitorId).delete();
+  await deleteDoc(doc(db, "Whitelist", visitorId));
   getWhitelist();
 }

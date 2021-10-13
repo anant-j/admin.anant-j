@@ -2,7 +2,8 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import firebase from "./firebase_config.js";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase_config";
 import vuetify from "./plugins/vuetify";
 import VueApexCharts from "vue-apexcharts";
 import * as VueGoogleMaps from "gmap-vue";
@@ -20,7 +21,7 @@ Vue.use(VueGoogleMaps, {
 });
 let app;
 
-firebase.auth().onAuthStateChanged((user) => {
+onAuthStateChanged(auth, (user) => {
   store.dispatch("auth/fetchUser", user);
   if (!app) {
     new Vue({
