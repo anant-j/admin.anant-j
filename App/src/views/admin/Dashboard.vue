@@ -19,7 +19,7 @@
           />
         </v-col>
       </div>
-      <v-col cols="3">
+      <v-col>
         <v-card>
           <v-sheet class="v-sheet--offset" style="height: 300px" color="dark">
             <apexchart
@@ -30,7 +30,7 @@
           </v-sheet>
         </v-card>
       </v-col>
-      <v-col cols="4">
+      <v-col>
         <GmapMap
           :center="center"
           :zoom="10"

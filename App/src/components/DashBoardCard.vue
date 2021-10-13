@@ -1,5 +1,5 @@
 <template>
-  <v-card :color="color" elevation="15" outlined>
+  <v-card :color="color" elevation="15" outlined style="width: 100%">
     <v-card-subtitle class="white--text">
       <h2>{{ title }}</h2>
     </v-card-subtitle>
