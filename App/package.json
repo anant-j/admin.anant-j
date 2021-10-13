@@ -1,5 +1,5 @@
 {
-  "name": "firebasepanel",
+  "name": "admin.anant-j",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,12 +13,12 @@
     "core-js": "^3.6.5",
     "firebase": "^7.21.0",
     "gmap-vue": "^1.5.0",
-    "vue": "^2.6.11",
+    "vue": "^2.6.14",
     "vue-apexcharts": "^1.6.2",
-    "vue-router": "^3.2.0",
-    "vuefire": "^2.2.4",
-    "vuetify": "^2.2.11",
-    "vuex": "^3.4.0"
+    "vue-router": "^3.5.2",
+    "vuefire": "^2.2.5",
+    "vuetify": "^2.5.10",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
