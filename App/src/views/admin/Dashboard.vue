@@ -121,7 +121,8 @@
             <td>{{ item.id }}</td>
             <td>{{ item.visits.length }}</td>
             <td>{{ item.location.place }}</td>
-            <td>{{ getMaxDate(item.visits) }}</td>
+            <td>{{ getMaxDate(item.visits).time }}</td>
+            <td>{{ getMaxDate(item.visits).page }}</td>
             <td>
               <v-chip
                 class="ma-2"
@@ -242,12 +243,14 @@ export default {
     },
     getMaxDate(visitKeyMap) {
       let max = 0;
+      let page = "Unknown";
       for (const keyval of visitKeyMap) {
         if (keyval.time > max) {
           max = keyval.time;
+          page = keyval.page;
         }
       }
-      return new Date(max).toLocaleString();
+      return { time: new Date(max).toLocaleString(), page: page };
     },
     save(id, label) {
       updateLabelFirebase(id, label);
@@ -274,8 +277,12 @@ export default {
           value: "location.place",
         },
         {
-          text: "Last Visit",
+          text: "Last Visit On",
           value: `visits`,
+        },
+        {
+          text: "Last Visited Page",
+          value: `pages`,
         },
         {
           text: "Actions",
@@ -293,10 +300,12 @@ export default {
     },
     latestVisit() {
       let minDate = 0;
+      let page = "Unknown";
       for (const key of this.$store.state.visitors) {
         for (const visit of key.visits) {
           if (visit.time > minDate) {
             minDate = visit.time;
+            page = visit.page;
           }
         }
       }
@@ -304,7 +313,7 @@ export default {
         const newDate = new Date(minDate);
         return `${newDate.toDateString().substr(4)} | ${newDate
           .toLocaleString()
-          .substr(11)}`;
+          .substr(11)}<br>@${page}`;
       }
       return "No data";
     },
