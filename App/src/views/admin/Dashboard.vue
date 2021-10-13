@@ -105,7 +105,7 @@
             <td>{{ item.id }}</td>
             <td>{{ item.visits.length }}</td>
             <td>{{ item.location.place }}</td>
-            <td>{{ new Date(Math.max(...item.visits)).toLocaleString() }}</td>
+            <td>{{ getMaxDate(item.visits) }}</td>
             <td>
               <v-chip
                 class="ma-2"
@@ -223,6 +223,15 @@ export default {
     openPage(id) {
       this.$router.push(`/visit?id=${id}`);
     },
+    getMaxDate(visitKeyMap){
+      let max = 0;
+      for (const keyval of visitKeyMap) {
+        if (keyval.time > max) {
+          max = keyval.time
+        }
+      }
+      return new Date(max).toLocaleString();
+    }
   },
   computed: {
     headers() {
@@ -266,8 +275,8 @@ export default {
       let minDate = 0;
       for (const key of this.$store.state.visitors) {
         for (const visit of key.visits) {
-          if (visit > minDate) {
-            minDate = visit;
+          if (visit.time > minDate) {
+            minDate = visit.time;
           }
         }
       }
@@ -322,7 +331,7 @@ export default {
         arr2.push(0);
         for (const key of this.$store.state.visitors) {
           for (const visit of key.visits) {
-            if (sameDay(new Date(visit), out)) {
+            if (sameDay(new Date(visit.time), out)) {
               const newVal = 1 + arr2.pop();
               arr2.push(newVal);
             }
