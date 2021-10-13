@@ -29,6 +29,7 @@ export async function getAllVisitorData(dateString) {
     final.push(data);
   });
   store.state.visitors = final;
+  updateAllLocalLabels();
 }
 
 export async function getBlacklist() {
@@ -119,4 +120,56 @@ export async function removeFromWhitelist(visitorId) {
   if (!confirmation) return;
   await deleteDoc(doc(db, "Whitelist", visitorId));
   getWhitelist();
+}
+
+export function updateAllLocalLabels() {
+  const newVisitors = [];
+  for (const visitor of store.state.visitors) {
+    if (store.state.blacklist[visitor.id]) {
+      visitor.label = store.state.blacklist[visitor.id].label;
+    } else if (store.state.whitelist[visitor.id]) {
+      visitor.label = store.state.whitelist[visitor.id].label;
+    }
+    if (!visitor.label || visitor.label === "") {
+      visitor.label = "No Label";
+    }
+    newVisitors.push(visitor);
+  }
+  store.state.visitors = newVisitors;
+}
+
+export async function updateLabelFirebase(id, label) {
+  if (store.state.blacklist[id]) {
+    await setDoc(
+      doc(db, "Blacklist", id),
+      {
+        label: label,
+      },
+      { merge: true }
+    );
+  } else if (store.state.whitelist[id]) {
+    await setDoc(
+      doc(db, "Whitelist", id),
+      {
+        label: label,
+      },
+      { merge: true }
+    );
+  } else {
+    await setDoc(
+      doc(db, store.state.selectedDate, id),
+      {
+        label: label,
+      },
+      { merge: true }
+    );
+  }
+  const newVisitors = [];
+  for (const visitor of store.state.visitors) {
+    if (visitor.id === id) {
+      visitor.label = label;
+    }
+    newVisitors.push(visitor);
+  }
+  store.state.visitors = newVisitors;
 }

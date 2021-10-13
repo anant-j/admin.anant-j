@@ -95,13 +95,27 @@
       >
         <template v-slot:item="{ item }">
           <tr>
-            <td v-if="$store.state.blacklist[item.id]">
+            <!-- <td v-if="$store.state.blacklist[item.id]">
               {{ $store.state.blacklist[item.id].label }}
             </td>
             <td v-else-if="$store.state.whitelist[item.id]">
               {{ $store.state.whitelist[item.id].label }}
             </td>
-            <td v-else>No label</td>
+            <td v-else>No label</td> -->
+            <td><v-edit-dialog
+              :return-value.sync="item.label"
+              @save="save(item.id, item.label)"
+            >
+              {{ item.label }}
+              <template v-slot:input>
+                <v-text-field
+                  v-model="item.label"
+                  label="Edit"
+                  single-line
+                  counter
+                ></v-text-field>
+              </template>
+            </v-edit-dialog></td>
             <td>{{ item.id }}</td>
             <td>{{ item.visits.length }}</td>
             <td>{{ item.location.place }}</td>
@@ -180,6 +194,7 @@ import {
   getWhitelist,
   removeFromBlacklist,
   removeFromWhitelist,
+  updateLabelFirebase,
 } from "../../firebase_config";
 import { getAllMonths, sameDay } from "../../utilities";
 export default {
@@ -216,9 +231,9 @@ export default {
       removeFromWhitelist(id);
     },
     refreshData() {
-      getAllVisitorData(this.$store.state.selectedDate);
       getBlacklist();
       getWhitelist();
+      getAllVisitorData(this.$store.state.selectedDate);
     },
     openPage(id) {
       this.$router.push(`/visit?id=${id}`);
@@ -231,6 +246,9 @@ export default {
         }
       }
       return new Date(max).toLocaleString();
+    },
+    save(id, label) {
+      updateLabelFirebase(id, label);
     },
   },
   computed: {
